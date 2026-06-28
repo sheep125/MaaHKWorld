@@ -15,13 +15,63 @@
         "action": "Custom",
         "custom_action": "HandleLauncherStartup",
         "custom_action_param": "{\"wait_before\": 3, \"max_attempts\": 3}",
-        "next": ["启动游戏_等待加载"]
+        "next": ["启动游戏_等待游戏窗口"]
+    },
+    "启动游戏_等待游戏窗口": {
+        "recognition": "DirectHit",
+        "action": "DoNothing",
+        "pre_delay": 5000,
+        "post_wait_freezes": 3000,
+        "next": [
+            "启动游戏_点击开始游戏",
+            "启动游戏_等待加载"
+        ]
+    },
+    "启动游戏_点击开始游戏": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": ["开始游戏", "进入游戏", "开始", "进入", "启程"]
+            }
+        },
+        "action": "Click",
+        "post_delay": 2000,
+        "post_wait_freezes": 5000,
+        "next": [
+            "启动游戏_等待进游戏"
+        ]
+    },
+    "启动游戏_等待进游戏": {
+        "recognition": "DirectHit",
+        "action": "DoNothing",
+        "pre_delay": 8000,
+        "post_wait_freezes": 3000,
+        "next": [
+            "启动游戏_点击开始游戏_二次检测",
+            "启动游戏_激活手柄模式"
+        ]
+    },
+    "启动游戏_点击开始游戏_二次检测": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": ["开始游戏", "进入游戏", "开始", "进入", "启程"]
+            }
+        },
+        "action": "Click",
+        "post_delay": 2000,
+        "post_wait_freezes": 5000,
+        "next": [
+            "启动游戏_激活手柄模式"
+        ]
     },
     "启动游戏_等待加载": {
         "recognition": "DirectHit",
         "action": "DoNothing",
-        "pre_delay": 8000,
-        "next": ["启动游戏_激活手柄模式"]
+        "pre_delay": 3000,
+        "next": [
+            "启动游戏_激活手柄模式"
+        ]
     },
     "启动游戏_激活手柄模式": {
         "recognition": "DirectHit",
