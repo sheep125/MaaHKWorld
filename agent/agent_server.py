@@ -7,6 +7,7 @@ from maa.agent.agent_server import AgentServer
 from utils.common_action import (
     GamepadController,
     ActivateGameWindow,
+    HandleLauncherStartup,
     ActivateGamepad,
     TestGamepadButtons,
     TestGamepadSticks,
@@ -59,6 +60,7 @@ def register_custom_actions():
     """注册所有自定义动作"""
     
     AgentServer.register_custom_action("ActivateGameWindow", ActivateGameWindow())
+    AgentServer.register_custom_action("HandleLauncherStartup", HandleLauncherStartup())
     AgentServer.register_custom_action("ActivateGamepad", ActivateGamepad())
     AgentServer.register_custom_action("FishingMultiMatchAction", FishingMultiMatchAction())
     AgentServer.register_custom_action("TestGamepadButtons", TestGamepadButtons())

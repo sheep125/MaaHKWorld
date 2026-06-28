@@ -11,6 +11,15 @@
         "action": "Custom",
         "custom_action": "ActivateGameWindow",
         "next": [
+            "测试滚动菜单_处理启动器"
+        ]
+    },
+    "测试滚动菜单_处理启动器": {
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "HandleLauncherStartup",
+        "custom_action_param": "{\"wait_before\": 3, \"max_attempts\": 3}",
+        "next": [
             "测试滚动菜单_初始化等待"
         ]
     },

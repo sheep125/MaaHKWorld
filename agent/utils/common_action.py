@@ -242,7 +242,11 @@ class GamepadController:
 
 
 class ActivateGameWindow(CustomAction):
-    """激活游戏窗口"""
+    """激活游戏窗口（包含启动器处理逻辑）
+    
+    王者荣耀世界直接启动游戏.exe会闪退，之后自动弹出启动器。
+    本动作会在激活游戏窗口失败时，自动查找启动器并点击"启动游戏"按钮。
+    """
     
     def run(self, context: Context, argv) -> bool:
         from utils.logger import log
@@ -257,8 +261,20 @@ class ActivateGameWindow(CustomAction):
             
             hwnd = win32gui.FindWindow("UnrealWindow", "王者荣耀世界")
             if not hwnd:
-                log("[Window] Game window not found")
-                return True
+                log("[Window] Game window not found, checking launcher...")
+                # 游戏窗口不存在，可能需要通过启动器启动
+                from utils.launcher_helper import handle_launcher_startup
+                launcher_result = handle_launcher_startup(attempts=3)
+                if launcher_result:
+                    log("[Window] Game started via launcher")
+                    # 重新查找游戏窗口
+                    hwnd = win32gui.FindWindow("UnrealWindow", "王者荣耀世界")
+                    if not hwnd:
+                        log("[Window] Game window still not found after launcher startup")
+                        return True
+                else:
+                    log("[Window] Launcher startup failed")
+                    return True
             
             log(f"[Window] Found game window: HWND={hwnd}")
             
@@ -284,6 +300,63 @@ class ActivateGameWindow(CustomAction):
             log(f"[Window] Failed to activate window: {e}")
         
         return True
+
+
+class HandleLauncherStartup(CustomAction):
+    """处理通过启动器启动游戏的独立自定义动作
+    
+    可在 pipeline 中作为独立步骤使用，在激活游戏窗口后检测是否需要启动器介入。
+    与 ActivateGameWindow 内置的逻辑不同，这个版本有更长的超时和重试策略。
+    """
+    
+    def run(self, context: Context, argv) -> bool:
+        from utils.logger import log
+        from utils.launcher_helper import (
+            is_game_window_alive,
+            handle_launcher_startup,
+        )
+        
+        log("[LauncherAction] Checking game window status...")
+        
+        # 解析参数
+        import json
+        max_attempts = 3
+        wait_before = 2  # 等待游戏可能闪退的时间
+        
+        try:
+            if hasattr(argv, 'custom_action_param') and argv.custom_action_param:
+                param_str = argv.custom_action_param
+                if isinstance(param_str, str):
+                    params = json.loads(param_str)
+                    if isinstance(params, str):
+                        params = json.loads(params)
+                else:
+                    params = param_str
+                max_attempts = params.get('max_attempts', 3)
+                wait_before = params.get('wait_before', 2)
+        except Exception:
+            pass
+        
+        # 等待一段时间让游戏可能的闪退发生
+        log(f"[LauncherAction] Waiting {wait_before}s for potential game crash...")
+        time.sleep(wait_before)
+        
+        # 检查游戏窗口
+        if is_game_window_alive():
+            log("[LauncherAction] Game window is alive, no launcher needed")
+            return True
+        
+        log("[LauncherAction] Game window not alive, using launcher...")
+        
+        # 执行启动器启动流程
+        success = handle_launcher_startup(attempts=max_attempts)
+        
+        if success:
+            log("[LauncherAction] Launcher startup successful")
+        else:
+            log("[LauncherAction] Launcher startup failed")
+        
+        return success
 
 
 class ActivateGamepad(CustomAction):

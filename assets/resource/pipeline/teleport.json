@@ -3,6 +3,13 @@
         "recognition": "DirectHit",
         "action": "Custom",
         "custom_action": "ActivateGameWindow",
+        "next": ["传送_处理启动器"]
+    },
+    "传送_处理启动器": {
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "HandleLauncherStartup",
+        "custom_action_param": "{\"wait_before\": 3, \"max_attempts\": 3}",
         "next": ["传送_初始化等待"]
     },
     "传送_初始化等待": {
