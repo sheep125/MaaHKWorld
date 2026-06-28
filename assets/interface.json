@@ -37,6 +37,13 @@
     ],
     "task": [
         {
+            "name": "StartGame",
+            "label": "启动游戏",
+            "entry": "启动游戏_开始",
+            "default_check": false,
+            "description": "自动通过启动器启动王者荣耀世界。处理游戏闪退后在启动器中点击「启动游戏」按钮，等待游戏完全加载后激活手柄模式。请确保启动器已打开"
+        },
+        {
             "name": "StartFishing",
             "label": "自动钓鱼",
             "entry": "激活游戏窗口",
